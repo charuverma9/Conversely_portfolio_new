@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conversely – CX Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500&family=Bricolage+Grotesque:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #F5F2EC;
+  --surface:  #FDFBF7;
+  --surface2: #EDE9E0;
+  --ink:      #1A1714;
+  --ink2:     #6B6560;
+  --ink3:     #A8A39C;
+  --teal:     #0D7377;
+  --teal-l:   #14A49A;
+  --teal-bg:  #E8F5F4;
+  --amber:    #C47B2B;
+  --amber-bg: #FEF3E2;
+  --rose:     #C0392B;
+  --rose-bg:  #FDECEA;
+  --violet:   #5B4FBE;
+  --violet-bg:#EEEDF9;
+  --border:   #E0DAD0;
+  --shadow:   0 1px 3px rgba(26,23,20,0.06), 0 4px 16px rgba(26,23,20,0.04);
+  --shadow-lg:0 8px 32px rgba(26,23,20,0.1), 0 2px 8px rgba(26,23,20,0.06);
+}
+
+html, body { height: 100%; overflow: hidden; }
+
+body {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  height: 56px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 0;
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-right: 32px;
+  text-decoration: none;
+}
+
+.logo-icon {
+  width: 28px; height: 28px;
+  background: var(--ink);
+  border-radius: 7px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+  padding: 5px;
+}
+.logo-icon div {
+  background: var(--surface);
+  border-radius: 2px;
+}
+.logo-icon div:last-child {
+  grid-column: span 2;
+  border-radius: 2px;
+  background: var(--teal-l);
+}
+
+.logo-text {
+  font-family: 'Instrument Serif', serif;
+  font-size: 19px;
+  color: var(--ink);
+  letter-spacing: -0.3px;
+}
+
+.topbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+}
+
+.topbar-nav a {
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink2);
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+.topbar-nav a:hover { background: var(--surface2); color: var(--ink); }
+.topbar-nav a.active { background: var(--ink); color: var(--surface); }
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.topbar-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  color: var(--ink3);
+  font-family: inherit;
+  width: 200px;
+  cursor: text;
+}
+.topbar-search svg { flex-shrink: 0; opacity: 0.5; }
+
+.avatar-ring {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--teal), var(--violet));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600;
+  color: white;
+  cursor: pointer;
+}
+
+.notif-btn {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s;
+}
+.notif-btn:hover { background: var(--surface2); }
+.notif-dot {
+  position: absolute;
+  top: 6px; right: 6px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--rose);
+  border: 1px solid var(--surface);
+}
+
+/* ── LAYOUT ── */
+.app-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 220px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-shrink: 0;
+  overflow-y: auto;
+}
+
+.sidebar-section {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink3);
+  padding: 12px 8px 6px;
+  font-family: 'Geist Mono', monospace;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink2);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  user-select: none;
+}
+.sidebar-item:hover { background: var(--bg); color: var(--ink); }
+.sidebar-item.active { background: var(--teal-bg); color: var(--teal); }
+.sidebar-item.active .si-icon { color: var(--teal); }
+.si-icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
+
+.sidebar-badge {
+  margin-left: auto;
+  background: var(--rose);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-family: 'Geist Mono', monospace;
+}
+.sidebar-badge.green { background: var(--teal); }
+
+.sidebar-divider { height: 1px; background: var(--border); margin: 8px 0; }
+
+.workspace-chip {
+  margin-top: auto;
+  padding: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+}
+.ws-avatar {
+  width: 28px; height: 28px; border-radius: 6px;
+  background: linear-gradient(135deg, var(--amber), var(--rose));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: white;
+  flex-shrink: 0;
+}
+.ws-name { font-size: 12px; font-weight: 600; }
+.ws-role { font-size: 11px; color: var(--ink3); }
+
+/* ── MAIN ── */
+.main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── PAGE HEADER ── */
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.page-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 26px;
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+.page-subtitle {
+  font-size: 13px;
+  color: var(--ink3);
+  margin-top: 4px;
+}
+.page-actions { display: flex; gap: 8px; align-items: center; }
+
+.btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--ink2);
+}
+.btn-ghost:hover { background: var(--surface2); color: var(--ink); }
+.btn-primary {
+  background: var(--ink);
+  color: var(--surface);
+}
+.btn-primary:hover { background: #2d2924; }
+.btn-teal {
+  background: var(--teal);
+  color: white;
+}
+.btn-teal:hover { background: var(--teal-l); }
+
+/* ── DATE RANGE ── */
+.date-range {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 3px;
+}
+.date-range span {
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--ink2);
+  transition: background 0.15s;
+}
+.date-range span.active { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+
+/* ── KPI GRID ── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.kpi-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 20px;
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.kpi-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-1px); }
+
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--accent-line, var(--teal));
+}
+
+.kpi-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.kpi-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink3);
+  font-family: 'Geist Mono', monospace;
+}
+.kpi-icon {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+
+.kpi-value {
+  font-family: 'Instrument Serif', serif;
+  font-size: 34px;
+  letter-spacing: -1px;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.kpi-change {
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Geist Mono', monospace;
+}
+.kpi-change.up { color: var(--teal); }
+.kpi-change.down { color: var(--rose); }
+
+.kpi-sparkline {
+  position: absolute;
+  bottom: 0; right: 0;
+  opacity: 0.12;
+}
+
+/* ── 2-COL LAYOUT ── */
+.two-col { display: grid; grid-template-columns: 1fr 360px; gap: 14px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+/* ── CARD ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.card-title {
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-subtitle { font-size: 12px; color: var(--ink3); margin-top: 2px; }
+.card-body { padding: 20px; }
+.card-actions { display: flex; gap: 6px; }
+
+/* ── CHART AREA ── */
+.chart-area {
+  height: 200px;
+  position: relative;
+}
+.chart-svg { width: 100%; height: 100%; }
+
+/* ── CONV TABLE ── */
+.conv-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.conv-table th {
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink3);
+  font-family: 'Geist Mono', monospace;
+  border-bottom: 1px solid var(--border);
+}
+.conv-table td {
+  padding: 11px 12px;
+  border-bottom: 1px solid rgba(224,218,208,0.5);
+  vertical-align: middle;
+}
+.conv-table tr:last-child td { border: none; }
+.conv-table tr:hover td { background: var(--bg); }
+
+.user-cell { display: flex; align-items: center; gap: 9px; }
+.u-av {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; flex-shrink: 0;
+}
+.u-name { font-weight: 500; font-size: 13px; }
+.u-id { font-size: 11px; color: var(--ink3); font-family: 'Geist Mono', monospace; }
+
+.status-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.status-pill::before {
+  content: '';
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.pill-ai { background: var(--teal-bg); color: var(--teal); }
+.pill-human { background: var(--violet-bg); color: var(--violet); }
+.pill-escalated { background: var(--amber-bg); color: var(--amber); }
+.pill-resolved { background: #EEF6EE; color: #2D7B2D; }
+
+.sentiment-bar {
+  height: 4px;
+  border-radius: 2px;
+  width: 60px;
+  background: var(--surface2);
+  overflow: hidden;
+}
+.sentiment-fill { height: 100%; border-radius: 2px; }
+
+.channel-icon {
+  width: 22px; height: 22px;
+  border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+}
+
+/* ── LIVE FEED ── */
+.live-feed { display: flex; flex-direction: column; gap: 0; }
+
+.feed-item {
+  padding: 12px 20px;
+  border-bottom: 1px solid rgba(224,218,208,0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.feed-item:last-child { border: none; }
+.feed-item:hover { background: var(--bg); }
+.feed-item.active { background: var(--teal-bg); border-left: 2px solid var(--teal); }
+
+.feed-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.feed-name { font-size: 13px; font-weight: 600; }
+.feed-time {
+  font-size: 11px;
+  color: var(--ink3);
+  font-family: 'Geist Mono', monospace;
+}
+.feed-msg { font-size: 12px; color: var(--ink2); line-height: 1.4; }
+.feed-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 2px; }
+.feed-tag {
+  font-size: 10px;
+  padding: 1px 7px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-family: 'Geist Mono', monospace;
+}
+
+/* ── AI PERFORMANCE ── */
+.ai-metrics { display: flex; flex-direction: column; gap: 14px; padding: 20px; }
+.ai-metric-row { display: flex; flex-direction: column; gap: 6px; }
+.ai-metric-top { display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+.ai-metric-label { color: var(--ink2); font-weight: 500; }
+.ai-metric-val { font-weight: 700; font-family: 'Geist Mono', monospace; font-size: 13px; }
+.progress-track {
+  height: 6px;
+  background: var(--surface2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--teal);
+  transition: width 1s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ── TOPIC CLOUD ── */
+.topic-list { display: flex; flex-wrap: wrap; gap: 8px; padding: 20px; }
+.topic-chip {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  cursor: default;
+  transition: background 0.15s;
+  display: flex; align-items: center; gap: 6px;
+}
+.topic-chip:hover { background: var(--surface2); }
+.topic-count { font-family: 'Geist Mono', monospace; font-size: 10px; color: var(--ink3); }
+
+/* ── AGENT TABLE ── */
+.agent-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  border-bottom: 1px solid rgba(224,218,208,0.4);
+  font-size: 13px;
+}
+.agent-row:last-child { border: none; }
+.agent-av {
+  width: 30px; height: 30px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: white; flex-shrink: 0;
+}
+.agent-name { font-weight: 500; flex: 1; }
+.agent-load {
+  font-size: 11px; font-family: 'Geist Mono', monospace;
+  color: var(--ink3);
+}
+.online-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── CSAT RING ── */
+.csat-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  gap: 16px;
+}
+.csat-ring-wrap { position: relative; width: 120px; height: 120px; }
+.csat-label-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.csat-big { font-family: 'Instrument Serif', serif; font-size: 30px; line-height: 1; }
+.csat-sub { font-size: 10px; color: var(--ink3); font-family: 'Geist Mono', monospace; }
+.csat-legend { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+.legend-row { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+.legend-label { flex: 1; color: var(--ink2); }
+.legend-val { font-family: 'Geist Mono', monospace; font-weight: 600; font-size: 11px; }
+
+/* ── VOLUME CHART ── */
+.vol-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 120px;
+  padding: 0 20px 0;
+}
+.vol-bar-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
+  justify-content: flex-end;
+}
+.vol-bar {
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+  transition: height 1s cubic-bezier(0.4,0,0.2,1);
+  position: relative;
+  overflow: hidden;
+  min-height: 4px;
+}
+.vol-bar::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 30%;
+  background: rgba(255,255,255,0.2);
+}
+.vol-label { font-size: 9px; color: var(--ink3); font-family: 'Geist Mono', monospace; }
+.vol-axis { display: flex; justify-content: space-between; padding: 4px 20px 0; font-size: 10px; color: var(--ink3); font-family: 'Geist Mono', monospace; border-top: 1px solid var(--border); }
+
+/* ── SCROLL ── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ── ANIMATE IN ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.kpi-card { animation: fadeUp 0.4s ease both; }
+.kpi-card:nth-child(1) { animation-delay: 0.05s; }
+.kpi-card:nth-child(2) { animation-delay: 0.10s; }
+.kpi-card:nth-child(3) { animation-delay: 0.15s; }
+.kpi-card:nth-child(4) { animation-delay: 0.20s; }
+
+/* ── LIVE PULSE ── */
+.live-badge {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 10px; font-weight: 600; color: var(--rose);
+  font-family: 'Geist Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.live-pulse {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--rose);
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(192,57,43,0.4); }
+  50% { opacity: 0.8; transform: scale(1.1); box-shadow: 0 0 0 4px rgba(192,57,43,0); }
+}
+
+/* ── AI BADGE ── */
+.ai-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: var(--teal-bg);
+  border: 1px solid rgba(13,115,119,0.2);
+  color: var(--teal);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-family: 'Geist Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <a class="logo" href="#">
+    <div class="logo-icon">
+      <div></div><div></div><div></div>
+    </div>
+    <span class="logo-text">Conversely</span>
+  </a>
+
+  <nav class="topbar-nav">
+    <a href="#" class="active">Overview</a>
+    <a href="#">Conversations</a>
+    <a href="#">Automation</a>
+    <a href="#">Analytics</a>
+    <a href="#">Agents</a>
+    <a href="#">Integrations</a>
+    <a href="#">Settings</a>
+  </nav>
+
+  <div class="topbar-right">
+    <div class="topbar-search">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.5"/><path d="m11 11 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Search conversations…
+    </div>
+    <div class="notif-btn">
+      <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M10 2a6 6 0 0 0-6 6v3l-1.5 2.5h15L16 11V8a6 6 0 0 0-6-6Z" stroke="currentColor" stroke-width="1.5"/><path d="M8 16.5a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.5"/></svg>
+      <div class="notif-dot"></div>
+    </div>
+    <div class="avatar-ring">SR</div>
+  </div>
+</div>
+
+<div class="app-body">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-section">Workspace</div>
+
+    <div class="sidebar-item active">
+      <span class="si-icon">⊞</span> Overview
+    </div>
+    <div class="sidebar-item">
+      <span class="si-icon">💬</span> Live Queue
+      <span class="sidebar-badge">14</span>
+    </div>
+    <div class="sidebar-item">
+      <span class="si-icon">🤖</span> AI Flows
+    </div>
+    <div class="sidebar-item">
+      <span class="si-icon">⚡</span> Escalations
+      <span class="sidebar-badge">3</span>
+    </div>
+
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">Analytics</div>
+
+    <div class="sidebar-item">
+      <span class="si-icon">📈</span> Reports
+    </div>
+    <div class="sidebar-item">
+      <span class="si-icon">🎯</span> CSAT
+      <span class="sidebar-badge green">92</span>
+    </div>
+    <div class="sidebar-item">
+      <span class="si-icon">🏷️</span> Topics
+    </div>
+    <div class="sidebar-item">
+      <span class="si-icon">🔍</span> Insights
+    </div>
+
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">Team</div>
+
+    <div class="sidebar-item">
+      <span class="si-icon">👥</span> Agents
+    </div>
+    <div class="sidebar-item">
+      <span class="si-icon">🔔</span> Alerts
+    </div>
+
+    <div class="workspace-chip" style="margin-top:16px;">
+      <div class="ws-avatar">A</div>
+      <div>
+        <div class="ws-name">Acme Corp</div>
+        <div class="ws-role">Admin · Pro Plan</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <div>
+        <div class="page-title">Good morning, Sara ✦</div>
+        <div class="page-subtitle">Tuesday, 24 Feb 2026 · <span style="color:var(--teal);font-weight:600;">14 active conversations</span></div>
+      </div>
+      <div class="page-actions">
+        <div class="date-range">
+          <span>Today</span>
+          <span class="active">7d</span>
+          <span>30d</span>
+          <span>90d</span>
+        </div>
+        <button class="btn btn-ghost">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M4 8h8M6 12h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Filter
+        </button>
+        <button class="btn btn-teal">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          New Flow
+        </button>
+      </div>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div class="kpi-grid">
+      <div class="kpi-card" style="--accent-line:var(--teal);">
+        <div class="kpi-top">
+          <div class="kpi-label">Total Conversations</div>
+          <div class="kpi-icon" style="background:var(--teal-bg);">💬</div>
+        </div>
+        <div class="kpi-value">8,412</div>
+        <div class="kpi-change up">↑ 12.4% vs last week</div>
+        <svg class="kpi-sparkline" width="80" height="40" viewBox="0 0 80 40"><polyline points="0,35 13,28 26,32 39,18 52,22 65,10 80,14" fill="none" stroke="var(--teal)" stroke-width="2"/></svg>
+      </div>
+
+      <div class="kpi-card" style="--accent-line:var(--teal-l);">
+        <div class="kpi-top">
+          <div class="kpi-label">AI Resolution Rate</div>
+          <div class="kpi-icon" style="background:var(--teal-bg);">🤖</div>
+        </div>
+        <div class="kpi-value">78.3%</div>
+        <div class="kpi-change up">↑ 3.1% vs last week</div>
+        <svg class="kpi-sparkline" width="80" height="40" viewBox="0 0 80 40"><polyline points="0,30 13,25 26,28 39,20 52,15 65,12 80,8" fill="none" stroke="var(--teal-l)" stroke-width="2"/></svg>
+      </div>
+
+      <div class="kpi-card" style="--accent-line:var(--amber);">
+        <div class="kpi-top">
+          <div class="kpi-label">Avg. Response Time</div>
+          <div class="kpi-icon" style="background:var(--amber-bg);">⚡</div>
+        </div>
+        <div class="kpi-value">1.8s</div>
+        <div class="kpi-change up">↑ 0.3s faster</div>
+        <svg class="kpi-sparkline" width="80" height="40" viewBox="0 0 80 40"><polyline points="0,28 13,32 26,22 39,18 52,14 65,10 80,6" fill="none" stroke="var(--amber)" stroke-width="2"/></svg>
+      </div>
+
+      <div class="kpi-card" style="--accent-line:var(--violet);">
+        <div class="kpi-top">
+          <div class="kpi-label">CSAT Score</div>
+          <div class="kpi-icon" style="background:var(--violet-bg);">⭐</div>
+        </div>
+        <div class="kpi-value">4.7</div>
+        <div class="kpi-change up">↑ 0.2 vs last week</div>
+        <svg class="kpi-sparkline" width="80" height="40" viewBox="0 0 80 40"><polyline points="0,32 13,28 26,25 39,22 52,18 65,14 80,10" fill="none" stroke="var(--violet)" stroke-width="2"/></svg>
+      </div>
+    </div>
+
+    <!-- ROW: VOLUME CHART + LIVE FEED -->
+    <div class="two-col">
+
+      <!-- VOLUME + TABLE -->
+      <div style="display:flex;flex-direction:column;gap:14px;">
+
+        <!-- Volume Chart -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">
+                Conversation Volume
+                <div class="ai-badge">AI Handled</div>
+              </div>
+              <div class="card-subtitle">Last 7 days · stacked by resolution type</div>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-ghost" style="font-size:12px;padding:5px 10px;">Export</button>
+            </div>
+          </div>
+
+          <div style="padding:20px 20px 8px;">
+            <div class="vol-bars" id="volBars"></div>
+            <div class="vol-axis">
+              <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+            </div>
+            <!-- Legend -->
+            <div style="display:flex;gap:16px;margin-top:12px;padding-top:10px;border-top:1px solid var(--border);">
+              <div class="legend-row"><div class="legend-dot" style="background:var(--teal);"></div><span style="font-size:12px;color:var(--ink2);">AI Resolved</span></div>
+              <div class="legend-row"><div class="legend-dot" style="background:var(--violet);"></div><span style="font-size:12px;color:var(--ink2);">Human Handled</span></div>
+              <div class="legend-row"><div class="legend-dot" style="background:var(--amber);"></div><span style="font-size:12px;color:var(--ink2);">Escalated</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Conversations Table -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Recent Conversations</div>
+              <div class="card-subtitle">Showing 6 of 8,412</div>
+            </div>
+            <button class="btn btn-ghost" style="font-size:12px;padding:5px 12px;">View all →</button>
+          </div>
+          <table class="conv-table">
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Topic</th>
+                <th>Channel</th>
+                <th>Status</th>
+                <th>Sentiment</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody id="convTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div style="display:flex;flex-direction:column;gap:14px;">
+
+        <!-- Live Queue -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              Live Queue
+              <div class="live-badge"><div class="live-pulse"></div>Live</div>
+            </div>
+            <div style="font-size:12px;font-family:'Geist Mono',monospace;color:var(--teal);font-weight:700;">14 active</div>
+          </div>
+          <div class="live-feed" id="liveFeed"></div>
+        </div>
+
+        <!-- CSAT -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Satisfaction Breakdown</div>
+          </div>
+          <div class="csat-center">
+            <div class="csat-ring-wrap">
+              <svg width="120" height="120" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="48" fill="none" stroke="var(--surface2)" stroke-width="10"/>
+                <!-- 5 star: 64% = 301.6*0.64 -->
+                <circle cx="60" cy="60" r="48" fill="none" stroke="var(--teal)" stroke-width="10"
+                  stroke-dasharray="301.6" stroke-dashoffset="108.6"
+                  stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                <!-- 4 star: 23% = 301.6*0.23, starts after 5 star -->
+                <circle cx="60" cy="60" r="48" fill="none" stroke="var(--teal-l)" stroke-width="10"
+                  stroke-dasharray="69.4 301.6" stroke-dashoffset="-193.0"
+                  stroke-linecap="round" transform="rotate(-90 60 60)" opacity="0.7"/>
+                <!-- rest -->
+                <circle cx="60" cy="60" r="48" fill="none" stroke="var(--amber)" stroke-width="10"
+                  stroke-dasharray="39.2 301.6" stroke-dashoffset="-262.4"
+                  stroke-linecap="round" transform="rotate(-90 60 60)" opacity="0.6"/>
+              </svg>
+              <div class="csat-label-center">
+                <div class="csat-big">4.7</div>
+                <div class="csat-sub">/5.0</div>
+              </div>
+            </div>
+            <div class="csat-legend">
+              <div class="legend-row"><div class="legend-dot" style="background:var(--teal);"></div><span class="legend-label">5 stars</span><span class="legend-val">64%</span></div>
+              <div class="legend-row"><div class="legend-dot" style="background:var(--teal-l);"></div><span class="legend-label">4 stars</span><span class="legend-val">23%</span></div>
+              <div class="legend-row"><div class="legend-dot" style="background:var(--amber);"></div><span class="legend-label">3 stars</span><span class="legend-val">9%</span></div>
+              <div class="legend-row"><div class="legend-dot" style="background:var(--rose);"></div><span class="legend-label">1–2 stars</span><span class="legend-val">4%</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ROW: AI PERFORMANCE + TOPICS + AGENTS -->
+    <div class="three-col">
+
+      <!-- AI Performance -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🤖 AI Performance</div>
+        </div>
+        <div class="ai-metrics">
+          <div class="ai-metric-row">
+            <div class="ai-metric-top">
+              <span class="ai-metric-label">Intent Match Rate</span>
+              <span class="ai-metric-val" style="color:var(--teal);">94.2%</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" style="width:94.2%;"></div></div>
+          </div>
+          <div class="ai-metric-row">
+            <div class="ai-metric-top">
+              <span class="ai-metric-label">Escalation Accuracy</span>
+              <span class="ai-metric-val" style="color:var(--teal);">89.7%</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" style="width:89.7%;"></div></div>
+          </div>
+          <div class="ai-metric-row">
+            <div class="ai-metric-top">
+              <span class="ai-metric-label">First Contact Resolution</span>
+              <span class="ai-metric-val" style="color:var(--amber);">72.1%</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" style="width:72.1%;background:var(--amber);"></div></div>
+          </div>
+          <div class="ai-metric-row">
+            <div class="ai-metric-top">
+              <span class="ai-metric-label">Tone Appropriateness</span>
+              <span class="ai-metric-val" style="color:var(--teal);">97.4%</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" style="width:97.4%;"></div></div>
+          </div>
+          <div class="ai-metric-row">
+            <div class="ai-metric-top">
+              <span class="ai-metric-label">Knowledge Coverage</span>
+              <span class="ai-metric-val" style="color:var(--rose);">61.3%</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" style="width:61.3%;background:var(--rose);opacity:0.8;"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hot Topics -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🏷️ Hot Topics</div>
+          <div style="font-size:12px;color:var(--ink3);">This week</div>
+        </div>
+        <div class="topic-list">
+          <div class="topic-chip" style="background:var(--teal-bg);border-color:rgba(13,115,119,0.2);color:var(--teal);">Billing Dispute <span class="topic-count">412</span></div>
+          <div class="topic-chip" style="background:var(--amber-bg);border-color:rgba(196,123,43,0.2);color:var(--amber);">Delivery Delay <span class="topic-count">387</span></div>
+          <div class="topic-chip">Password Reset <span class="topic-count">256</span></div>
+          <div class="topic-chip">Order Status <span class="topic-count">231</span></div>
+          <div class="topic-chip" style="background:var(--rose-bg);border-color:rgba(192,57,43,0.15);color:var(--rose);">Refund Request <span class="topic-count">198</span></div>
+          <div class="topic-chip">Account Upgrade <span class="topic-count">167</span></div>
+          <div class="topic-chip">Product FAQ <span class="topic-count">144</span></div>
+          <div class="topic-chip" style="background:var(--violet-bg);border-color:rgba(91,79,190,0.2);color:var(--violet);">Cancellation <span class="topic-count">129</span></div>
+          <div class="topic-chip">Return Policy <span class="topic-count">118</span></div>
+          <div class="topic-chip">Tech Support <span class="topic-count">97</span></div>
+          <div class="topic-chip">Shipping Info <span class="topic-count">84</span></div>
+          <div class="topic-chip">Promo Codes <span class="topic-count">72</span></div>
+        </div>
+      </div>
+
+      <!-- Agent Status -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">👥 Agent Status</div>
+          <div style="font-size:12px;font-family:'Geist Mono',monospace;color:var(--teal);">6 online</div>
+        </div>
+        <div id="agentList"></div>
+      </div>
+
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ── DATA ──
+const conversations = [
+  { name: 'Mia Chen', id: '#48291', initials: 'MC', color: '#0D7377', topic: 'Order Status', channel: '💬', channelBg: '#E8F5F4', status: 'pill-ai', statusText: 'AI Handled', sentiment: 0.88, sentColor: '#0D7377', time: '2m ago' },
+  { name: 'Raj Patel', id: '#48288', initials: 'RP', color: '#5B4FBE', topic: 'Billing Dispute', channel: '📧', channelBg: '#EEEDF9', status: 'pill-escalated', statusText: 'Escalated', sentiment: 0.31, sentColor: '#C47B2B', time: '5m ago' },
+  { name: 'Sara Kim', id: '#48285', initials: 'SK', color: '#C47B2B', topic: 'Refund Request', channel: '📱', channelBg: '#FEF3E2', status: 'pill-human', statusText: 'Human', sentiment: 0.55, sentColor: '#C47B2B', time: '11m ago' },
+  { name: 'Leo Torres', id: '#48280', initials: 'LT', color: '#C0392B', topic: 'Tech Support', channel: '💬', channelBg: '#E8F5F4', status: 'pill-ai', statusText: 'AI Handled', sentiment: 0.72, sentColor: '#0D7377', time: '18m ago' },
+  { name: 'Emma Solis', id: '#48274', initials: 'ES', color: '#2D7B2D', topic: 'Account Upgrade', channel: '📧', channelBg: '#EEEDF9', status: 'pill-resolved', statusText: 'Resolved', sentiment: 0.95, sentColor: '#2D7B2D', time: '29m ago' },
+  { name: 'Noah Wu', id: '#48268', initials: 'NW', color: '#5B4FBE', topic: 'Cancellation', channel: '📱', channelBg: '#FEF3E2', status: 'pill-human', statusText: 'Human', sentiment: 0.22, sentColor: '#C0392B', time: '41m ago' },
+];
+
+const tbody = document.getElementById('convTableBody');
+conversations.forEach(c => {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td>
+      <div class="user-cell">
+        <div class="u-av" style="background:${c.color}20;color:${c.color};">${c.initials}</div>
+        <div><div class="u-name">${c.name}</div><div class="u-id">${c.id}</div></div>
+      </div>
+    </td>
+    <td style="color:var(--ink2);font-size:13px;">${c.topic}</td>
+    <td><div class="channel-icon" style="background:${c.channelBg};">${c.channel}</div></td>
+    <td><span class="status-pill ${c.status}">${c.statusText}</span></td>
+    <td>
+      <div class="sentiment-bar"><div class="sentiment-fill" style="width:${c.sentiment*100}%;background:${c.sentColor};"></div></div>
+    </td>
+    <td style="color:var(--ink3);font-size:12px;font-family:'Geist Mono',monospace;">${c.time}</td>
+  `;
+  tbody.appendChild(tr);
+});
+
+// ── LIVE FEED ──
+const queue = [
+  { name: 'Priya N.', msg: 'My delivery hasn\'t arrived and it\'s been 5 days already...', tags: [{t:'Delivery',c:'var(--amber-bg)',tc:'var(--amber)'},{t:'Urgent',c:'var(--rose-bg)',tc:'var(--rose)'}], time: '0:42', active: true },
+  { name: 'Jake M.', msg: 'Can I upgrade my plan mid-cycle?', tags: [{t:'Billing',c:'var(--teal-bg)',tc:'var(--teal)'}], time: '1:18', active: false },
+  { name: 'Aisha K.', msg: 'Password reset email not coming through', tags: [{t:'Auth',c:'var(--violet-bg)',tc:'var(--violet)'}], time: '2:05', active: false },
+  { name: 'Tom B.', msg: 'I was charged twice for the same order #47821', tags: [{t:'Billing',c:'var(--teal-bg)',tc:'var(--teal)'},{t:'Escalate',c:'var(--amber-bg)',tc:'var(--amber)'}], time: '3:30', active: false },
+  { name: 'Clara V.', msg: 'What\'s your return policy for electronics?', tags: [{t:'Returns',c:'#EEF6EE',tc:'#2D7B2D'}], time: '4:12', active: false },
+];
+
+const feedEl = document.getElementById('liveFeed');
+queue.forEach(q => {
+  const div = document.createElement('div');
+  div.className = `feed-item${q.active ? ' active' : ''}`;
+  div.innerHTML = `
+    <div class="feed-top">
+      <span class="feed-name">${q.name}</span>
+      <span class="feed-time">${q.time}</span>
+    </div>
+    <div class="feed-msg">${q.msg}</div>
+    <div class="feed-tags">${q.tags.map(t=>`<span class="feed-tag" style="background:${t.c};color:${t.tc};">${t.t}</span>`).join('')}</div>
+  `;
+  feedEl.appendChild(div);
+});
+
+// ── VOLUME BARS ──
+const volData = [
+  { ai: 78, human: 18, esc: 4 },
+  { ai: 82, human: 12, esc: 6 },
+  { ai: 70, human: 22, esc: 8 },
+  { ai: 88, human: 9,  esc: 3 },
+  { ai: 91, human: 7,  esc: 2 },
+  { ai: 65, human: 25, esc: 10 },
+  { ai: 74, human: 20, esc: 6 },
+];
+
+const maxTotal = Math.max(...volData.map(d => d.ai + d.human + d.esc));
+const barsEl = document.getElementById('volBars');
+
+volData.forEach(d => {
+  const total = d.ai + d.human + d.esc;
+  const h = 110;
+  const wrap = document.createElement('div');
+  wrap.className = 'vol-bar-wrap';
+
+  // Stacked bar (flex column reversed)
+  const stack = document.createElement('div');
+  stack.style.cssText = `width:100%;display:flex;flex-direction:column;justify-content:flex-end;height:${h}px;gap:1px;`;
+
+  const escBar = document.createElement('div');
+  escBar.className = 'vol-bar';
+  escBar.style.cssText = `height:${(d.esc/maxTotal)*h}px;background:var(--amber);border-radius:3px 3px 0 0;`;
+
+  const humBar = document.createElement('div');
+  humBar.className = 'vol-bar';
+  humBar.style.cssText = `height:${(d.human/maxTotal)*h}px;background:var(--violet);border-radius:0;`;
+
+  const aiBar = document.createElement('div');
+  aiBar.className = 'vol-bar';
+  aiBar.style.cssText = `height:${(d.ai/maxTotal)*h}px;background:var(--teal);border-radius:0;`;
+
+  stack.appendChild(escBar);
+  stack.appendChild(humBar);
+  stack.appendChild(aiBar);
+  wrap.appendChild(stack);
+  barsEl.appendChild(wrap);
+});
+
+// ── AGENTS ──
+const agents = [
+  { name: 'Carlos R.', role: 'Senior Agent', load: '4/5', color: '#0D7377', online: true },
+  { name: 'Yuki T.', role: 'CX Specialist', load: '3/5', color: '#5B4FBE', online: true },
+  { name: 'Ines B.', role: 'Billing Expert', load: '5/5', color: '#C0392B', online: true },
+  { name: 'Dev S.', role: 'Tech Support', load: '2/5', color: '#C47B2B', online: true },
+  { name: 'Lea M.', role: 'General CX', load: '1/5', color: '#2D7B2D', online: true },
+  { name: 'Omar F.', role: 'Onboarding', load: '0/5', color: '#888', online: false },
+];
+
+const agentEl = document.getElementById('agentList');
+agents.forEach(a => {
+  const div = document.createElement('div');
+  div.className = 'agent-row';
+  div.innerHTML = `
+    <div class="agent-av" style="background:${a.color};">${a.name.split(' ').map(w=>w[0]).join('')}</div>
+    <div>
+      <div class="agent-name">${a.name}</div>
+      <div style="font-size:11px;color:var(--ink3);">${a.role}</div>
+    </div>
+    <div class="agent-load">${a.load} convs</div>
+    <div class="online-dot" style="background:${a.online ? 'var(--teal)' : 'var(--border)'};box-shadow:${a.online ? '0 0 0 3px var(--teal-bg)' : 'none'};"></div>
+  `;
+  agentEl.appendChild(div);
+});
+
+// ── DATE RANGE TOGGLE ──
+document.querySelectorAll('.date-range span').forEach(s => {
+  s.addEventListener('click', () => {
+    document.querySelectorAll('.date-range span').forEach(x => x.classList.remove('active'));
+    s.classList.add('active');
+  });
+});
+
+// ── SIDEBAR TOGGLE ──
+document.querySelectorAll('.sidebar-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.sidebar-item').forEach(x => x.classList.remove('active'));
+    item.classList.add('active');
+  });
+});
+
+// ── LIVE QUEUE TICK ──
+let elapsed = { 0: 42, 1: 78, 2: 125, 3: 210, 4: 252 };
+setInterval(() => {
+  feedEl.querySelectorAll('.feed-time').forEach((el, i) => {
+    elapsed[i] = (elapsed[i] || 0) + 1;
+    const m = Math.floor(elapsed[i] / 60);
+    const s = elapsed[i] % 60;
+    el.textContent = `${m}:${String(s).padStart(2, '0')}`;
+  });
+}, 1000);
+</script>
+</body>
+</html>
